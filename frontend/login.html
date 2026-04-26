@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Login — Freezery</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <script type="module">
+    import { initTheme } from './js/api.js';
+    initTheme();
+  </script>
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
+    .auth-wrapper { width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; min-height: 100vh; position: relative; }
+    .auth-card { max-width: 420px; width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 36px 32px; box-shadow: var(--shadow-md); }
+    .auth-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; justify-content: center; }
+    .auth-logo img { width: 40px; height: 40px; }
+    .auth-logo-title { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+    .auth-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
+    .auth-tab { flex: 1; padding: 10px; background: none; border: none; font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .auth-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .auth-form { display: none; flex-direction: column; gap: 16px; }
+    .auth-form.active { display: flex; }
+    .auth-btn { width: 100%; }
+    .auth-error { background: var(--badge-out-bg); color: var(--danger); border: 1px solid var(--danger); border-radius: var(--radius); padding: 10px 12px; font-size: 0.875rem; display: none; }
+    .auth-error.visible { display: block; }
+    #login-theme-toggle { position: fixed; top: 16px; right: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; width: 40px; height: 40px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); }
+    @media (max-width: 480px) {
+      .auth-wrapper { align-items: flex-start; padding: 24px 16px; }
+      .auth-card { border-radius: var(--radius); padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <button id="login-theme-toggle" id="theme-toggle" onclick="import('./js/api.js').then(m => m.toggleTheme())">🌙</button>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <img src="assets/logo.svg" alt="Freezery logo">
+        <span class="auth-logo-title">Freezery</span>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="register">Register</button>
+      </div>
+
+      <form class="auth-form active" id="login-form">
+        <div id="login-error" class="auth-error"></div>
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" name="username" autocomplete="username" required placeholder="your username">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary auth-btn">Sign In</button>
+      </form>
+
+      <form class="auth-form" id="register-form">
+        <div id="register-error" class="auth-error"></div>
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" name="username" autocomplete="username" required placeholder="choose a username" minlength="3">
+          <span class="hint-text">At least 3 characters</span>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" name="password" autocomplete="new-password" required placeholder="••••••••" minlength="6">
+          <span class="hint-text">At least 6 characters</span>
+        </div>
+        <button type="submit" class="btn btn-primary auth-btn">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { login, register, initTheme, toggleTheme } from './js/api.js';
+    initTheme();
+
+    document.getElementById('login-theme-toggle')?.addEventListener('click', toggleTheme);
+
+    // Tab switching
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`${tab.dataset.tab}-form`).classList.add('active');
+      });
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('login-error');
+      errEl.classList.remove('visible');
+      const btn = e.target.querySelector('[type="submit"]');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      try {
+        await login(e.target.username.value, e.target.password.value);
+        window.location.href = 'index.html';
+      } catch (err) {
+        errEl.textContent = err.message || 'Login failed';
+        errEl.classList.add('visible');
+        btn.disabled = false; btn.textContent = 'Sign In';
+      }
+    });
+
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('register-error');
+      errEl.classList.remove('visible');
+      const btn = e.target.querySelector('[type="submit"]');
+      btn.disabled = true; btn.textContent = 'Creating account…';
+      try {
+        await register(e.target.username.value, e.target.password.value);
+        window.location.href = 'index.html';
+      } catch (err) {
+        errEl.textContent = err.message || 'Registration failed';
+        errEl.classList.add('visible');
+        btn.disabled = false; btn.textContent = 'Create Account';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Add Item — Freezery</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <script type="module">
+    import { initTheme } from './js/api.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.svg" class="sidebar-logo" alt="Freezery">
+        <span class="sidebar-title">Freezery</span>
+        <button class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html"><span class="nav-icon">🏠</span> Dashboard</a>
+        <a href="inventory.html"><span class="nav-icon">📦</span> Inventory</a>
+        <a href="add-item.html" class="active"><span class="nav-icon">➕</span> Add Item</a>
+        <a href="recommendations.html"><span class="nav-icon">🤖</span> AI Recommendations</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar">U</div>
+          <span class="username-display">User</span>
+        </div>
+        <div class="sidebar-actions">
+          <button id="theme-toggle" title="Toggle dark mode">🌙</button>
+          <button class="btn-logout logout-btn">Logout</button>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-overlay"></div>
+
+    <main class="main-content">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" aria-label="Open menu">☰</button>
+          <span class="topbar-title">Add Item</span>
+        </div>
+        <div class="topbar-right">
+          <button id="topbar-theme-toggle">🌙</button>
+          <button class="topbar-user-btn" id="topbar-user-btn">U</button>
+          <div class="topbar-user-dropdown" id="topbar-user-dropdown">
+            <div class="dropdown-name username-display">User</div>
+            <button class="logout-btn">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h1>Add Item</h1>
+          <a href="inventory.html" class="btn btn-ghost">← Back to Inventory</a>
+        </div>
+
+        <div class="form-card">
+          <form id="add-item-form" novalidate>
+            <div class="form-section-label">Item Details</div>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="name">Item Name *</label>
+                <input type="text" id="name" name="name" maxlength="200" placeholder="e.g. Chicken Breast" required>
+                <span class="field-error" id="error-name"></span>
+              </div>
+              <div class="form-group">
+                <label for="category_id">Category</label>
+                <select id="category_id" name="category_id">
+                  <option value="">Select category…</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="location">Location</label>
+                <select id="location" name="location">
+                  <option value="">Select location…</option>
+                  <option value="fridge">Fridge</option>
+                  <option value="freezer">Freezer</option>
+                  <option value="pantry">Pantry</option>
+                  <option value="cupboard">Cupboard</option>
+                  <option value="counter">Counter</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="quantity">Quantity *</label>
+                <input type="number" id="quantity" name="quantity" min="0" step="1" placeholder="0" required>
+                <span class="field-error" id="error-quantity"></span>
+              </div>
+              <div class="form-group">
+                <label for="unit">Unit</label>
+                <select id="unit" name="unit">
+                  <option value="units">units</option>
+                  <option value="kg">kg</option>
+                  <option value="g">g</option>
+                  <option value="lbs">lbs</option>
+                  <option value="oz">oz</option>
+                  <option value="L">L</option>
+                  <option value="ml">ml</option>
+                  <option value="bags">bags</option>
+                  <option value="boxes">boxes</option>
+                  <option value="cans">cans</option>
+                  <option value="bottles">bottles</option>
+                  <option value="packs">packs</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="min_quantity">Min Quantity</label>
+                <input type="number" id="min_quantity" name="min_quantity" min="0" step="1" placeholder="1">
+                <span class="hint-text">Alerts when stock falls below this</span>
+                <span class="field-error" id="error-min_quantity"></span>
+              </div>
+            </div>
+
+            <div class="form-section-label">Dates & Price</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="purchase_date">Purchase Date</label>
+                <input type="date" id="purchase_date" name="purchase_date">
+              </div>
+              <div class="form-group">
+                <label for="expiry_date">Expiry Date</label>
+                <input type="date" id="expiry_date" name="expiry_date">
+                <span class="warning-text" id="expiry-warning"></span>
+              </div>
+              <div class="form-group">
+                <label for="purchase_price">Purchase Price ($)</label>
+                <input type="number" id="purchase_price" name="purchase_price" min="0" step="0.01" placeholder="0.00">
+                <span class="field-error" id="error-purchase_price"></span>
+              </div>
+            </div>
+
+            <div class="form-section-label">Notes</div>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description" placeholder="Short description…">
+              </div>
+              <div class="form-group full-width">
+                <label for="notes">Notes</label>
+                <textarea id="notes" name="notes" rows="3" placeholder="Any additional notes…" style="min-height:80px;resize:vertical"></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Add Item</button>
+              <a href="inventory.html" class="btn btn-ghost">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/add-item.js"></script>
+</body>
+</html>

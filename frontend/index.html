@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Dashboard — Freezery</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <script type="module">
+    import { initTheme } from './js/api.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.svg" class="sidebar-logo" alt="Freezery">
+        <span class="sidebar-title">Freezery</span>
+        <button class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html" class="active"><span class="nav-icon">🏠</span> Dashboard</a>
+        <a href="inventory.html"><span class="nav-icon">📦</span> Inventory</a>
+        <a href="add-item.html"><span class="nav-icon">➕</span> Add Item</a>
+        <a href="recommendations.html"><span class="nav-icon">🤖</span> AI Recommendations</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar">U</div>
+          <span class="username-display">User</span>
+        </div>
+        <div class="sidebar-actions">
+          <button id="theme-toggle" title="Toggle dark mode">🌙</button>
+          <button class="btn-logout logout-btn">Logout</button>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-overlay"></div>
+
+    <!-- Main -->
+    <main class="main-content">
+      <!-- Topbar (mobile/tablet) -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" aria-label="Open menu">☰</button>
+          <span class="topbar-title">Freezery</span>
+        </div>
+        <div class="topbar-right">
+          <button id="topbar-theme-toggle">🌙</button>
+          <button class="topbar-user-btn" id="topbar-user-btn">U</button>
+          <div class="topbar-user-dropdown" id="topbar-user-dropdown">
+            <div class="dropdown-name username-display">User</div>
+            <button class="logout-btn">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h1>Dashboard</h1>
+          <a href="add-item.html" class="btn btn-primary">➕ Add Item</a>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-label">Total Items</div>
+            <div class="stat-card-value" id="stat-total">—</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-card-label">Low Stock</div>
+            <div class="stat-card-value" id="stat-low">—</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-card-label">Out of Stock</div>
+            <div class="stat-card-value" id="stat-out">—</div>
+          </div>
+          <div class="stat-card expired">
+            <div class="stat-card-label">Expired</div>
+            <div class="stat-card-value" id="stat-expired">—</div>
+          </div>
+        </div>
+
+        <!-- Recent items -->
+        <div class="card" style="padding:0;overflow:hidden;margin-bottom:24px">
+          <div class="section-header" style="padding:16px 20px 0">
+            <h2>Recent Items</h2>
+            <a href="inventory.html">View all →</a>
+          </div>
+          <div class="recent-table-wrap" style="box-shadow:none;border:none;margin:0">
+            <table class="recent-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="recent-tbody">
+                <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-secondary)">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bottom grid: Needs Attention + Shopping List -->
+        <div class="dashboard-bottom">
+          <div class="card">
+            <div class="section-header">
+              <h2>Needs Attention</h2>
+              <a href="inventory.html?status=low">See all →</a>
+            </div>
+            <div class="attention-list" id="attention-list">
+              <p style="color:var(--text-secondary);font-size:0.875rem">Loading…</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-header">
+              <h2>Shopping List</h2>
+            </div>
+            <div class="shopping-list" id="shopping-list">
+              <p style="color:var(--text-secondary);font-size:0.875rem">Loading…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

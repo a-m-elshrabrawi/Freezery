@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Inventory — Freezery</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/inventory.css">
+  <script type="module">
+    import { initTheme } from './js/api.js';
+    initTheme();
+  </script>
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.svg" class="sidebar-logo" alt="Freezery">
+        <span class="sidebar-title">Freezery</span>
+        <button class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html"><span class="nav-icon">🏠</span> Dashboard</a>
+        <a href="inventory.html" class="active"><span class="nav-icon">📦</span> Inventory</a>
+        <a href="add-item.html"><span class="nav-icon">➕</span> Add Item</a>
+        <a href="recommendations.html"><span class="nav-icon">🤖</span> AI Recommendations</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar">U</div>
+          <span class="username-display">User</span>
+        </div>
+        <div class="sidebar-actions">
+          <button id="theme-toggle" title="Toggle dark mode">🌙</button>
+          <button class="btn-logout logout-btn">Logout</button>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-overlay"></div>
+
+    <main class="main-content">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" aria-label="Open menu">☰</button>
+          <span class="topbar-title">Inventory</span>
+        </div>
+        <div class="topbar-right">
+          <button id="topbar-theme-toggle">🌙</button>
+          <button class="topbar-user-btn" id="topbar-user-btn">U</button>
+          <div class="topbar-user-dropdown" id="topbar-user-dropdown">
+            <div class="dropdown-name username-display">User</div>
+            <button class="logout-btn">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div class="page-header">
+          <h1>Inventory</h1>
+          <a href="add-item.html" class="btn btn-primary">➕ Add Item</a>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-bar">
+          <div class="search">
+            <input type="search" id="filter-search" placeholder="Search items…" autocomplete="off">
+          </div>
+          <button class="btn btn-ghost filter-toggle-btn" id="filter-toggle-btn">Filters ▾</button>
+          <div class="filter-panel" id="filter-panel">
+            <select id="filter-category">
+              <option value="">All Categories</option>
+            </select>
+            <select id="filter-status">
+              <option value="">All Statuses</option>
+              <option value="ok">OK</option>
+              <option value="low">Low</option>
+              <option value="out">Out</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="inventory-container">
+          <div style="text-align:center;padding:48px;color:var(--text-secondary)">
+            <div class="spinner" style="margin:0 auto 12px"></div>
+            Loading inventory…
+          </div>
+        </div>
+
+        <div id="pagination"></div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/inventory.js"></script>
+</body>
+</html>

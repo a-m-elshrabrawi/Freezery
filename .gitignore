@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+backend/.env
+.env
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime
+*.pid
+*.seed

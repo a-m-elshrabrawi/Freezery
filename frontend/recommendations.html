@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>AI Recommendations — Freezery</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/main.css">
+  <script type="module">
+    import { initTheme } from './js/api.js';
+    initTheme();
+  </script>
+  <style>
+    .rec-group { margin-bottom: 32px; }
+    .recommendations-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .recommendations-grid { grid-template-columns: 1fr; }
+    }
+    .rec-card { display: flex; flex-direction: column; gap: 8px; }
+    .rec-card-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+    .rec-item-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .rec-action { font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+    .rec-reason { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+    .rec-meta { text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-top: 8px; padding: 16px; border-top: 1px solid var(--border); }
+    .rec-page-header { margin-bottom: 28px; }
+    .rec-subtitle { color: var(--text-secondary); font-size: 0.875rem; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <img src="assets/logo.svg" class="sidebar-logo" alt="Freezery">
+        <span class="sidebar-title">Freezery</span>
+        <button class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <div class="sidebar-nav">
+        <a href="index.html"><span class="nav-icon">🏠</span> Dashboard</a>
+        <a href="inventory.html"><span class="nav-icon">📦</span> Inventory</a>
+        <a href="add-item.html"><span class="nav-icon">➕</span> Add Item</a>
+        <a href="recommendations.html" class="active"><span class="nav-icon">🤖</span> AI Recommendations</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar">U</div>
+          <span class="username-display">User</span>
+        </div>
+        <div class="sidebar-actions">
+          <button id="theme-toggle" title="Toggle dark mode">🌙</button>
+          <button class="btn-logout logout-btn">Logout</button>
+        </div>
+      </div>
+    </nav>
+    <div class="sidebar-overlay"></div>
+
+    <main class="main-content">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" aria-label="Open menu">☰</button>
+          <span class="topbar-title">AI Recommendations</span>
+        </div>
+        <div class="topbar-right">
+          <button id="topbar-theme-toggle">🌙</button>
+          <button class="topbar-user-btn" id="topbar-user-btn">U</button>
+          <div class="topbar-user-dropdown" id="topbar-user-dropdown">
+            <div class="dropdown-name username-display">User</div>
+            <button class="logout-btn">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div class="page-header rec-page-header">
+          <div>
+            <h1>AI Recommendations</h1>
+            <p class="rec-subtitle">Powered by Claude — analyzes your live inventory</p>
+          </div>
+          <button id="generate-btn" class="btn btn-primary">🤖 Generate Recommendations</button>
+        </div>
+
+        <div id="rec-output">
+          <div class="empty-state">
+            <div class="empty-state-icon">🤖</div>
+            <h3>Ready to analyze</h3>
+            <p>Click "Generate Recommendations" to let Claude analyze your inventory and suggest restocking actions, expiry alerts, and more.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/recommendations.js"></script>
+</body>
+</html>
