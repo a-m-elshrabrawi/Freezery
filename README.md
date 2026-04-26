@@ -4,7 +4,7 @@ A personal grocery inventory tracker that helps you manage everything in your ki
 
 ## Live Demo
 
-- **Frontend (GitHub Pages):** `https://YOUR_USERNAME.github.io/freezery/`
+- **Frontend (GitHub Pages):** `https://a-m-elshabrawi.github.io/freezery/`
 - **Backend (Render):** `https://YOUR_RENDER_APP_NAME.onrender.com`
 
 ---
@@ -46,7 +46,7 @@ A personal grocery inventory tracker that helps you manage everything in your ki
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/freezery.git
+git clone https://github.com/a-m-elshabrawi/freezery.git
 cd freezery
 ```
 
@@ -88,8 +88,8 @@ node server.js
 
 ```bash
 # From project root:
-npx serve frontend/
-# Or use VS Code Live Server pointing to /frontend
+npx serve docs/
+# Or use VS Code Live Server pointing to /docs
 ```
 
 Open `http://localhost:5500` (or whatever port `serve` uses).
@@ -101,8 +101,8 @@ Open `http://localhost:5500` (or whatever port `serve` uses).
 ### Frontend → GitHub Pages
 
 1. Push repo to GitHub
-2. Go to **Settings → Pages**, source: `main` branch, folder: `/frontend`
-3. Update `frontend/js/config.js` with your Render backend URL
+2. Go to **Settings → Pages**, source: `main` branch, folder: `/docs`
+3. Update `docs/js/config.js` with your Render backend URL
 4. Push again — GitHub Pages redeploys automatically
 
 ### Backend → Render
@@ -113,7 +113,7 @@ Open `http://localhost:5500` (or whatever port `serve` uses).
    - Root directory: `backend`
    - Build: `npm install`
    - Start: `node server.js`
-4. Set environment variables: `DATABASE_URL`, `SESSION_SECRET`, `ANTHROPIC_API_KEY`, `NODE_ENV=production`, `FRONTEND_URL=https://YOUR_USERNAME.github.io`
+4. Set environment variables: `DATABASE_URL`, `SESSION_SECRET`, `ANTHROPIC_API_KEY`, `NODE_ENV=production`, `FRONTEND_URL=https://a-m-elshabrawi.github.io`
 
 > **Note:** Render free tier spins down after 15 min of inactivity. First request after wake-up takes ~30s.
 
