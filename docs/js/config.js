@@ -3,7 +3,7 @@ const isDev = window.location.hostname === 'localhost' || window.location.hostna
 const config = {
   API_BASE: isDev
     ? 'http://localhost:3000'
-    : 'https://YOUR_RENDER_APP_NAME.onrender.com', // ← replace during deployment
+    : 'https://freezery-api.onrender.com', // ← replace during deployment
 };
 
 export default config;

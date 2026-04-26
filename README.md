@@ -5,20 +5,20 @@ A personal grocery inventory tracker that helps you manage everything in your ki
 ## Live Demo
 
 - **Frontend (GitHub Pages):** `https://a-m-elshabrawi.github.io/freezery/`
-- **Backend (Render):** `https://YOUR_RENDER_APP_NAME.onrender.com`
+- **Backend (Render):** `https://freezery-api.onrender.com`
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
-|-------|-----------|-----------|
-| Frontend | Vanilla HTML + CSS + JavaScript | Zero build tooling, instant GitHub Pages deploy |
-| Backend | Node.js + Express | Lightweight, great PostgreSQL integration |
-| Database | PostgreSQL | Relational data with proper foreign keys and triggers |
-| AI | Claude API (`claude-haiku-4-5-20251001`) | Fast, cheap, ideal for structured JSON output |
-| Auth | express-session + connect-pg-simple | Simple session-based auth, no JWT complexity |
-| Deploy | GitHub Pages (frontend) + Render (backend) | Free tier, easy CI/CD via git push |
+| Layer    | Technology                                 | Rationale                                             |
+| -------- | ------------------------------------------ | ----------------------------------------------------- |
+| Frontend | Vanilla HTML + CSS + JavaScript            | Zero build tooling, instant GitHub Pages deploy       |
+| Backend  | Node.js + Express                          | Lightweight, great PostgreSQL integration             |
+| Database | PostgreSQL                                 | Relational data with proper foreign keys and triggers |
+| AI       | Claude API (`claude-haiku-4-5-20251001`)   | Fast, cheap, ideal for structured JSON output         |
+| Auth     | express-session + connect-pg-simple        | Simple session-based auth, no JWT complexity          |
+| Deploy   | GitHub Pages (frontend) + Render (backend) | Free tier, easy CI/CD via git push                    |
 
 ---
 
@@ -72,6 +72,7 @@ psql -U freezery_user -d freezery -f backend/schema.sql
 ```
 
 Update `DATABASE_URL` in `.env`:
+
 ```
 DATABASE_URL=postgresql://freezery_user:yourpassword@localhost:5432/freezery
 ```
@@ -123,38 +124,38 @@ Open `http://localhost:5500` (or whatever port `serve` uses).
 
 ### Auth (`/api/auth`)
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/auth/register` | Create account, return session |
-| POST | `/api/auth/login` | Login, return session |
-| POST | `/api/auth/logout` | Destroy session |
-| GET | `/api/auth/me` | Get current user |
+| Method | Path                 | Description                    |
+| ------ | -------------------- | ------------------------------ |
+| POST   | `/api/auth/register` | Create account, return session |
+| POST   | `/api/auth/login`    | Login, return session          |
+| POST   | `/api/auth/logout`   | Destroy session                |
+| GET    | `/api/auth/me`       | Get current user               |
 
 ### Items (`/api/items`) — Protected
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/items` | List items. Supports `?search=&category=&status=&sort=&order=&limit=&offset=` |
-| GET | `/api/items/summary` | Dashboard counts (total, low, out, expired) |
-| GET | `/api/items/:id` | Get item by ID |
-| POST | `/api/items` | Create item |
-| PUT | `/api/items/:id` | Update item |
-| DELETE | `/api/items/:id` | Delete item |
+| Method | Path                 | Description                                                                   |
+| ------ | -------------------- | ----------------------------------------------------------------------------- |
+| GET    | `/api/items`         | List items. Supports `?search=&category=&status=&sort=&order=&limit=&offset=` |
+| GET    | `/api/items/summary` | Dashboard counts (total, low, out, expired)                                   |
+| GET    | `/api/items/:id`     | Get item by ID                                                                |
+| POST   | `/api/items`         | Create item                                                                   |
+| PUT    | `/api/items/:id`     | Update item                                                                   |
+| DELETE | `/api/items/:id`     | Delete item                                                                   |
 
 ### Categories (`/api/categories`) — Protected
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/categories` | List user's categories |
-| POST | `/api/categories` | Create category |
-| PUT | `/api/categories/:id` | Update category |
-| DELETE | `/api/categories/:id` | Delete category |
+| Method | Path                  | Description            |
+| ------ | --------------------- | ---------------------- |
+| GET    | `/api/categories`     | List user's categories |
+| POST   | `/api/categories`     | Create category        |
+| PUT    | `/api/categories/:id` | Update category        |
+| DELETE | `/api/categories/:id` | Delete category        |
 
 ### Recommendations (`/api/recommendations`) — Protected
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/recommendations` | Generate AI recommendations (cached 5 min per user) |
+| Method | Path                   | Description                                         |
+| ------ | ---------------------- | --------------------------------------------------- |
+| POST   | `/api/recommendations` | Generate AI recommendations (cached 5 min per user) |
 
 ---
 
@@ -176,11 +177,3 @@ The prompt instructs Claude to think like a practical grocery planner: prioritiz
 
 - **Claude Code:** Used to scaffold the entire project — folder structure, all backend routes, middleware, controllers, frontend HTML/CSS/JS, schema, and configuration. All generated code was reviewed before use.
 - **Claude API:** Powers the live recommendations feature at `/api/recommendations`. Prompt engineering was done manually to produce structured JSON output.
-
-### What I changed/rejected
-
-_Fill this in with 2-3 specific examples of things you modified or rejected from the generated output._
-
-### What I built without AI
-
-_Fill this in during your no-AI evaluation session._
