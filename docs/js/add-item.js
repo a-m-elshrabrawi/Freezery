@@ -64,16 +64,21 @@ function setupForm() {
   const form = document.getElementById('add-item-form');
   if (!form) return;
 
-  // Expiry date warning
   const expiryInput = document.getElementById('expiry_date');
   if (expiryInput) {
     expiryInput.addEventListener('change', () => {
       const warn = document.getElementById('expiry-warning');
-      if (expiryInput.value && new Date(expiryInput.value) < new Date()) {
-        warn.textContent = '⚠️ This date is in the past';
-      } else {
-        warn.textContent = '';
-      }
+      warn.textContent = expiryInput.value && new Date(expiryInput.value) < new Date()
+        ? '⚠️ This date is in the past' : '';
+    });
+  }
+
+  const purchaseInput = document.getElementById('purchase_date');
+  if (purchaseInput) {
+    purchaseInput.addEventListener('change', () => {
+      const warn = document.getElementById('purchase-warning');
+      warn.textContent = purchaseInput.value && new Date(purchaseInput.value) > new Date()
+        ? '⚠️ This date is in the future' : '';
     });
   }
 

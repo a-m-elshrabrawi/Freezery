@@ -67,10 +67,11 @@ function setupLogout() {
 
 async function loadDashboard() {
   try {
-    const [summary, recentData, attentionData] = await Promise.all([
+    const [summary, recentData, lowData, outData] = await Promise.all([
       getItemsSummary(),
       getItems({ sort: 'updated_at', order: 'desc', limit: 8 }),
       getItems({ status: 'low', limit: 5 }),
+      getItems({ status: 'out', limit: 5 }),
     ]);
 
     // Stat cards
@@ -79,8 +80,9 @@ async function loadDashboard() {
     document.getElementById('stat-out').textContent = summary.out_of_stock || 0;
     document.getElementById('stat-expired').textContent = summary.expired || 0;
 
+    const attentionItems = [...(outData.items || []), ...(lowData.items || [])];
     renderRecentTable(recentData.items || []);
-    renderAttentionItems(attentionData.items || []);
+    renderAttentionItems(attentionItems);
 
   } catch (err) {
     showToast(err.message || 'Failed to load dashboard', 'error');
@@ -145,6 +147,7 @@ function showRestockModal({ id, name, unit, currentQty }) {
         <label class="form-label" for="restock-qty">Quantity purchased${unit ? ` (${unit})` : ''}</label>
         <input class="form-input" type="number" id="restock-qty" min="1" value="1" style="max-width:140px">
       </div>
+      <p class="restock-error" id="restock-error" style="color:var(--danger);font-size:0.85rem;margin:0 0 12px;display:none"></p>
       <div class="modal-actions">
         <button class="btn btn-ghost" id="restock-cancel">Cancel</button>
         <button class="btn btn-primary" id="restock-confirm">Add to stock</button>
@@ -160,10 +163,14 @@ function showRestockModal({ id, name, unit, currentQty }) {
 
   overlay.querySelector('#restock-confirm').addEventListener('click', async () => {
     const added = parseInt(input.value, 10);
+    const errEl = overlay.querySelector('#restock-error');
     if (!added || added < 1) {
+      errEl.textContent = 'Please enter a quantity of at least 1.';
+      errEl.style.display = 'block';
       input.focus();
       return;
     }
+    errEl.style.display = 'none';
     try {
       const { getItem } = await import('./api.js');
       const item = await getItem(id);

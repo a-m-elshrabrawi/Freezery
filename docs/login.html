@@ -6,10 +6,6 @@
   <title>Login — Freezery</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="css/main.css">
-  <script type="module">
-    import { initTheme } from './js/api.js';
-    initTheme();
-  </script>
   <style>
     body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
     .auth-wrapper { width: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; min-height: 100vh; position: relative; }
@@ -25,7 +21,7 @@
     .auth-btn { width: 100%; }
     .auth-error { background: var(--badge-out-bg); color: var(--danger); border: 1px solid var(--danger); border-radius: var(--radius); padding: 10px 12px; font-size: 0.875rem; display: none; }
     .auth-error.visible { display: block; }
-    #login-theme-toggle { position: fixed; top: 16px; right: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; width: 40px; height: 40px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); }
+    #theme-toggle { position: fixed; top: 16px; right: 16px; z-index: 999; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; width: 40px; height: 40px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); }
     @media (max-width: 480px) {
       .auth-wrapper { align-items: flex-start; padding: 24px 16px; }
       .auth-card { border-radius: var(--radius); padding: 24px 20px; }
@@ -33,7 +29,7 @@
   </style>
 </head>
 <body>
-  <button id="login-theme-toggle" id="theme-toggle" onclick="import('./js/api.js').then(m => m.toggleTheme())">🌙</button>
+  <button id="theme-toggle">🌙</button>
 
   <div class="auth-wrapper">
     <div class="auth-card">
@@ -81,7 +77,7 @@
     import { login, register, initTheme, toggleTheme } from './js/api.js';
     initTheme();
 
-    document.getElementById('login-theme-toggle')?.addEventListener('click', toggleTheme);
+    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 
     // Tab switching
     document.querySelectorAll('.auth-tab').forEach(tab => {

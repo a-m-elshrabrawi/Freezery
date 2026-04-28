@@ -72,7 +72,6 @@ async function loadItem() {
   try {
     const item = await getItem(itemId);
     fillForm(item);
-    document.title = `Edit: ${item.name} — Freezery`;
   } catch {
     showToast('Item not found', 'error');
     setTimeout(() => { window.location.href = 'inventory.html'; }, 1500);
@@ -102,11 +101,17 @@ function setupForm() {
   if (expiryInput) {
     expiryInput.addEventListener('change', () => {
       const warn = document.getElementById('expiry-warning');
-      if (expiryInput.value && new Date(expiryInput.value) < new Date()) {
-        warn.textContent = '⚠️ This date is in the past';
-      } else {
-        warn.textContent = '';
-      }
+      warn.textContent = expiryInput.value && new Date(expiryInput.value) < new Date()
+        ? '⚠️ This date is in the past' : '';
+    });
+  }
+
+  const purchaseInput = document.getElementById('purchase_date');
+  if (purchaseInput) {
+    purchaseInput.addEventListener('change', () => {
+      const warn = document.getElementById('purchase-warning');
+      warn.textContent = purchaseInput.value && new Date(purchaseInput.value) > new Date()
+        ? '⚠️ This date is in the future' : '';
     });
   }
 

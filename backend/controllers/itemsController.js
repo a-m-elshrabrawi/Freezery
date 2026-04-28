@@ -3,10 +3,13 @@ const { query } = require('../db');
 async function getItems(req, res, next) {
   try {
     const { search, category, status, sort = 'updated_at', order = 'desc', limit, offset = 0 } = req.query;
-    const validSorts = ['name', 'quantity', 'updated_at', 'expiry_date', 'created_at'];
+    const validSorts = ['name', 'quantity', 'updated_at', 'expiry_date', 'created_at', 'location', 'category'];
     const validOrders = ['asc', 'desc'];
     const sortCol = validSorts.includes(sort) ? sort : 'updated_at';
     const sortOrder = validOrders.includes(order.toLowerCase()) ? order.toUpperCase() : 'DESC';
+    const orderByExpr = sort === 'category'
+      ? `c.name ${sortOrder} NULLS LAST`
+      : `i.${sortCol} ${sortOrder} NULLS LAST`;
 
     const conditions = ['i.user_id = $1'];
     const params = [req.user.id];
@@ -34,7 +37,7 @@ async function getItems(req, res, next) {
       FROM items i
       LEFT JOIN categories c ON i.category_id = c.id
       WHERE ${whereClause}
-      ORDER BY i.${sortCol} ${sortOrder}
+      ORDER BY ${orderByExpr}
     `;
 
     if (limit) {

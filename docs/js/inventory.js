@@ -4,7 +4,7 @@ initTheme();
 
 let allItems = [];
 let currentPage = 1;
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 let sortField = 'updated_at';
 let sortOrder = 'desc';
 let filters = { search: '', category: '', status: '' };
@@ -93,6 +93,10 @@ async function loadItems() {
 async function adjustQuantity(id, delta) {
   const item = allItems.find(i => i.id == id);
   if (!item) return;
+  if (delta < 0 && item.quantity === 0) {
+    showToast('Quantity is already at 0', 'warning');
+    return;
+  }
   const newQty = Math.max(0, item.quantity + delta);
   if (newQty === item.quantity) return;
   try {
@@ -144,10 +148,10 @@ function renderTable(items, container) {
         <thead>
           <tr>
             <th><button class="sort-btn" data-field="name">Name ${sortField==='name'?(sortOrder==='asc'?'↑':'↓'):''}</button></th>
-            <th>Category</th>
+            <th><button class="sort-btn" data-field="category">Category ${sortField==='category'?(sortOrder==='asc'?'↑':'↓'):''}</button></th>
             <th><button class="sort-btn" data-field="quantity">Qty ${sortField==='quantity'?(sortOrder==='asc'?'↑':'↓'):''}</button></th>
             <th>Status</th>
-            <th>Location</th>
+            <th><button class="sort-btn" data-field="location">Location ${sortField==='location'?(sortOrder==='asc'?'↑':'↓'):''}</button></th>
             ${!isTablet ? '<th class="col-purchase-date"><button class="sort-btn" data-field="updated_at">Updated '+(sortField==='updated_at'?(sortOrder==='asc'?'↑':'↓'):'')+' </button></th>' : ''}
             <th>Actions</th>
           </tr>
@@ -209,14 +213,16 @@ function renderCards(items, container) {
             <span class="cat-badge">${item.category_icon || '📦'} ${escHtml(item.category_name || 'Uncategorized')}</span>
           </div>
         </div>
-        <div class="inventory-card-name">${escHtml(item.name)}</div>
-        <div class="inventory-card-qty">
-          <div class="qty-control">
-            <button class="qty-btn" data-id="${item.id}" data-delta="-1">−</button>
-            <span>${item.quantity} ${escHtml(item.unit || '')}</span>
-            <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
+        <div class="inventory-card-name-row">
+          <div class="inventory-card-name">${escHtml(item.name)}</div>
+          <div class="inventory-card-qty-inline">
+            <div class="qty-control">
+              <button class="qty-btn" data-id="${item.id}" data-delta="-1">−</button>
+              <span>${item.quantity} ${escHtml(item.unit || '')}</span>
+              <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
+            </div>
+            <span class="item-meta" style="text-align:right">Min: ${item.min_quantity}</span>
           </div>
-          <span style="color:var(--text-secondary)">Min: ${item.min_quantity}</span>
         </div>
         <div class="inventory-card-meta">
           ${item.location ? `📍 ${escHtml(item.location)}` : ''}
@@ -226,13 +232,10 @@ function renderCards(items, container) {
           <a href="edit-item.html?id=${item.id}" class="btn btn-ghost btn-sm">Edit</a>
           <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}" data-name="${escHtml(item.name)}">Delete</button>
         </div>
-        <div class="swipe-delete-reveal">Delete</div>
       </div>
     `).join('')}
   </div>`;
 
-  setupSwipeDelete(container);
-  setupLongPress(container);
   bindDeleteButtons(container);
   container.querySelectorAll('.qty-btn').forEach(btn => {
     btn.addEventListener('click', () => adjustQuantity(btn.dataset.id, parseInt(btn.dataset.delta)));
@@ -272,49 +275,6 @@ function confirmDelete(id, name) {
   });
 }
 
-function setupSwipeDelete(container) {
-  container.querySelectorAll('.inventory-card').forEach(card => {
-    let startX = 0;
-    card.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
-    card.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - startX;
-      if (dx < -60) {
-        card.classList.add('swiped');
-        card.querySelector('.swipe-delete-reveal').addEventListener('click', () => {
-          const id = card.dataset.id;
-          const name = card.querySelector('.inventory-card-name').textContent;
-          confirmDelete(id, name);
-        });
-      } else if (dx > 20) {
-        card.classList.remove('swiped');
-      }
-    });
-  });
-}
-
-function setupLongPress(container) {
-  container.querySelectorAll('.inventory-card').forEach(card => {
-    let timer;
-    card.addEventListener('touchstart', () => {
-      timer = setTimeout(() => {
-        const id = card.dataset.id;
-        const name = card.querySelector('.inventory-card-name').textContent;
-        const menu = document.createElement('div');
-        menu.className = 'modal-overlay';
-        menu.innerHTML = `<div class="modal"><h3>${escHtml(name)}</h3><div class="modal-actions" style="justify-content:stretch;flex-direction:column;gap:8px">
-          <a href="edit-item.html?id=${id}" class="btn btn-ghost" style="justify-content:center">Edit</a>
-          <button class="btn btn-danger del-action">Delete</button>
-          <button class="btn btn-ghost cancel-action">Cancel</button>
-        </div></div>`;
-        document.body.appendChild(menu);
-        menu.querySelector('.del-action').addEventListener('click', () => { menu.remove(); confirmDelete(id, name); });
-        menu.querySelector('.cancel-action').addEventListener('click', () => menu.remove());
-      }, 600);
-    }, { passive: true });
-    card.addEventListener('touchend', () => clearTimeout(timer));
-    card.addEventListener('touchmove', () => clearTimeout(timer), { passive: true });
-  });
-}
 
 function renderPagination() {
   const total = allItems.length;
@@ -325,9 +285,9 @@ function renderPagination() {
   const isMobile = window.innerWidth < 600;
   if (isMobile) {
     pag.innerHTML = `<div class="pagination-simple">
-      <button ${currentPage === 1 ? 'disabled' : ''} id="pag-prev">← Prev</button>
+      <button class="btn btn-ghost" ${currentPage === 1 ? 'disabled' : ''} id="pag-prev">← Prev</button>
       <span class="pagination-info">Page ${currentPage} of ${totalPages}</span>
-      <button ${currentPage === totalPages ? 'disabled' : ''} id="pag-next">Next →</button>
+      <button class="btn btn-ghost" ${currentPage === totalPages ? 'disabled' : ''} id="pag-next">Next →</button>
     </div>`;
     pag.querySelector('#pag-prev')?.addEventListener('click', () => { currentPage--; renderItems(); });
     pag.querySelector('#pag-next')?.addEventListener('click', () => { currentPage++; renderItems(); });

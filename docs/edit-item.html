@@ -78,14 +78,7 @@
               </div>
               <div class="form-group">
                 <label for="location">Location</label>
-                <select id="location" name="location">
-                  <option value="">Select location…</option>
-                  <option value="fridge">Fridge</option>
-                  <option value="freezer">Freezer</option>
-                  <option value="pantry">Pantry</option>
-                  <option value="cupboard">Cupboard</option>
-                  <option value="counter">Counter</option>
-                </select>
+                <input type="text" id="location" name="location" placeholder="e.g. Fridge, Pantry…">
               </div>
               <div class="form-group">
                 <label for="quantity">Quantity *</label>
@@ -121,6 +114,7 @@
               <div class="form-group">
                 <label for="purchase_date">Purchase Date</label>
                 <input type="date" id="purchase_date" name="purchase_date">
+                <span class="warning-text" id="purchase-warning"></span>
               </div>
               <div class="form-group">
                 <label for="expiry_date">Expiry Date</label>

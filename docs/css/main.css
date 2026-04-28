@@ -364,7 +364,7 @@ a:hover { color: var(--accent-hover); }
 
 .page-content {
   padding: clamp(16px, 4vw, 48px);
-  max-width: 1800px;
+  width: 100%;
 }
 
 /* ── Topbar (mobile) ───────────────────────────────────────────── */
@@ -508,7 +508,7 @@ label {
 /* ── Toast notifications ───────────────────────────────────────── */
 .toast-container {
   position: fixed;
-  bottom: clamp(12px, 3vw, 24px);
+  top: clamp(12px, 3vw, 24px);
   right: clamp(12px, 3vw, 24px);
   z-index: 9999;
   display: flex;
