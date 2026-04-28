@@ -82,10 +82,6 @@ async function loadDashboard() {
     renderRecentTable(recentData.items || []);
     renderAttentionItems(attentionData.items || []);
 
-    // Shopping list = low + out
-    const outData = await getItems({ status: 'out', limit: 50 });
-    const shoppingItems = [...(attentionData.items || []), ...(outData.items || [])];
-    renderShoppingList(shoppingItems);
   } catch (err) {
     showToast(err.message || 'Failed to load dashboard', 'error');
   }
@@ -94,7 +90,7 @@ async function loadDashboard() {
 function renderRecentTable(items) {
   const tbody = document.getElementById('recent-tbody');
   if (!items.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:24px">No items yet. <a href="add-item.html">Add your first item →</a></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary);padding:24px">No items yet. <a href="add-item.html">Add your first item →</a></td></tr>';
     return;
   }
   tbody.innerHTML = items.map(item => `
@@ -103,7 +99,6 @@ function renderRecentTable(items) {
       <td>${item.category_icon || '📦'} ${escHtml(item.category_name || 'Uncategorized')}</td>
       <td>${item.quantity} ${escHtml(item.unit || '')}</td>
       <td><span class="badge badge-${item.status}">${item.status}</span></td>
-      <td><a href="edit-item.html?id=${item.id}" class="btn btn-ghost btn-sm">Edit</a></td>
     </tr>
   `).join('');
 }
@@ -122,42 +117,69 @@ function renderAttentionItems(items) {
       </div>
       <div class="attention-item-actions">
         <span class="badge badge-${item.status}">${item.status}</span>
-        <button class="btn btn-ghost btn-sm restock-btn" data-id="${item.id}" data-min="${item.min_quantity}">Restock</button>
-        <a href="edit-item.html?id=${item.id}" class="btn btn-ghost btn-sm">Edit</a>
+        <button class="btn btn-ghost btn-sm restock-btn" data-id="${item.id}" data-name="${escHtml(item.name)}" data-unit="${escHtml(item.unit || '')}" data-qty="${item.quantity}">Restock</button>
       </div>
     </div>
   `).join('');
 
   list.querySelectorAll('.restock-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', () => {
       const id = btn.dataset.id;
-      const min = parseInt(btn.dataset.min, 10);
-      try {
-        const item = await import('./api.js').then(m => m.getItem(id));
-        await updateItem(id, { ...item, quantity: min + 5 });
-        showToast('Item restocked!', 'success');
-        loadDashboard();
-      } catch (err) {
-        showToast(err.message || 'Failed to restock', 'error');
-      }
+      const name = btn.dataset.name;
+      const unit = btn.dataset.unit;
+      const currentQty = parseInt(btn.dataset.qty, 10);
+      showRestockModal({ id, name, unit, currentQty });
     });
   });
 }
 
-function renderShoppingList(items) {
-  const list = document.getElementById('shopping-list');
-  if (!items.length) {
-    list.innerHTML = '<p style="color:var(--text-secondary);font-size:0.875rem">Nothing to restock — you\'re all set! ✅</p>';
-    return;
-  }
-  const unique = [...new Map(items.map(i => [i.id, i])).values()];
-  list.innerHTML = unique.map(item => `
-    <div class="shopping-item">
-      <input type="checkbox" id="shop-${item.id}">
-      <label for="shop-${item.id}" class="shopping-item-name" style="font-weight:normal;margin:0;color:var(--text-primary)">${escHtml(item.name)}</label>
-      <span class="badge badge-${item.status}">${item.status}</span>
-    </div>
-  `).join('');
+
+function showRestockModal({ id, name, unit, currentQty }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>Restock "${name}"</h3>
+      <p>Current quantity: <strong>${currentQty} ${unit}</strong>. How many did you buy?</p>
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label" for="restock-qty">Quantity purchased${unit ? ` (${unit})` : ''}</label>
+        <input class="form-input" type="number" id="restock-qty" min="1" value="1" style="max-width:140px">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="restock-cancel">Cancel</button>
+        <button class="btn btn-primary" id="restock-confirm">Add to stock</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const input = overlay.querySelector('#restock-qty');
+  input.focus();
+  input.select();
+
+  overlay.querySelector('#restock-cancel').addEventListener('click', () => overlay.remove());
+
+  overlay.querySelector('#restock-confirm').addEventListener('click', async () => {
+    const added = parseInt(input.value, 10);
+    if (!added || added < 1) {
+      input.focus();
+      return;
+    }
+    try {
+      const { getItem } = await import('./api.js');
+      const item = await getItem(id);
+      await updateItem(id, { ...item, quantity: item.quantity + added });
+      overlay.remove();
+      showToast(`Added ${added} ${unit} to ${name}`, 'success');
+      loadDashboard();
+    } catch (err) {
+      showToast(err.message || 'Failed to restock', 'error');
+    }
+  });
+
+  overlay.addEventListener('keydown', e => {
+    if (e.key === 'Enter') overlay.querySelector('#restock-confirm').click();
+    if (e.key === 'Escape') overlay.remove();
+  });
 }
 
 function escHtml(str) {

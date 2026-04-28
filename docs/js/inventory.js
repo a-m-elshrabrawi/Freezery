@@ -1,4 +1,4 @@
-import { initTheme, toggleTheme, showToast, getItems, deleteItem, getCategories, getMe, logout } from './api.js';
+import { initTheme, toggleTheme, showToast, getItems, updateItem, deleteItem, getCategories, getMe, logout } from './api.js';
 
 initTheme();
 
@@ -90,6 +90,31 @@ async function loadItems() {
   }
 }
 
+async function adjustQuantity(id, delta) {
+  const item = allItems.find(i => i.id == id);
+  if (!item) return;
+  const newQty = Math.max(0, item.quantity + delta);
+  if (newQty === item.quantity) return;
+  try {
+    await updateItem(id, {
+      name: item.name,
+      category_id: item.category_id,
+      quantity: newQty,
+      unit: item.unit,
+      min_quantity: item.min_quantity,
+      location: item.location,
+      purchase_date: item.purchase_date,
+      expiry_date: item.expiry_date,
+      purchase_price: item.purchase_price,
+      description: item.description,
+      notes: item.notes,
+    });
+    await loadItems();
+  } catch (err) {
+    showToast(err.message || 'Failed to update quantity', 'error');
+  }
+}
+
 function renderItems() {
   const container = document.getElementById('inventory-container');
   if (!allItems.length) {
@@ -135,13 +160,22 @@ function renderTable(items, container) {
                 ${item.expiry_date ? `<div class="item-meta">Exp: ${formatDate(item.expiry_date)}</div>` : ''}
               </td>
               <td><span class="cat-badge">${item.category_icon || '📦'} ${escHtml(item.category_name || 'Uncategorized')}</span></td>
-              <td>${item.quantity} <span style="color:var(--text-secondary);font-size:0.8em">${escHtml(item.unit || '')}</span><div class="item-meta">Min: ${item.min_quantity}</div></td>
+              <td>
+                <div class="qty-control">
+                  <button class="qty-btn" data-id="${item.id}" data-delta="-1">−</button>
+                  <span>${item.quantity} <span style="color:var(--text-secondary);font-size:0.8em">${escHtml(item.unit || '')}</span></span>
+                  <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
+                </div>
+                <div class="item-meta">Min: ${item.min_quantity}</div>
+              </td>
               <td><span class="badge badge-${item.status}">${item.status}</span></td>
               <td>${escHtml(item.location || '—')}</td>
               ${!isTablet ? `<td class="col-purchase-date" style="color:var(--text-secondary);font-size:0.8rem">${formatDate(item.updated_at)}</td>` : ''}
-              <td class="table-actions">
-                <a href="edit-item.html?id=${item.id}" class="btn btn-ghost btn-sm">Edit</a>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}" data-name="${escHtml(item.name)}">Delete</button>
+              <td>
+                <div class="table-actions">
+                  <a href="edit-item.html?id=${item.id}" class="btn btn-ghost btn-sm">Edit</a>
+                  <button class="btn btn-danger btn-sm delete-btn" data-id="${item.id}" data-name="${escHtml(item.name)}">Delete</button>
+                </div>
               </td>
             </tr>
           `).join('')}
@@ -158,6 +192,10 @@ function renderTable(items, container) {
     });
   });
 
+  container.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => adjustQuantity(btn.dataset.id, parseInt(btn.dataset.delta)));
+  });
+
   bindDeleteButtons(container);
 }
 
@@ -172,7 +210,14 @@ function renderCards(items, container) {
           </div>
         </div>
         <div class="inventory-card-name">${escHtml(item.name)}</div>
-        <div class="inventory-card-qty">Qty: ${item.quantity} ${escHtml(item.unit || '')} &nbsp;·&nbsp; Min: ${item.min_quantity}</div>
+        <div class="inventory-card-qty">
+          <div class="qty-control">
+            <button class="qty-btn" data-id="${item.id}" data-delta="-1">−</button>
+            <span>${item.quantity} ${escHtml(item.unit || '')}</span>
+            <button class="qty-btn" data-id="${item.id}" data-delta="1">+</button>
+          </div>
+          <span style="color:var(--text-secondary)">Min: ${item.min_quantity}</span>
+        </div>
         <div class="inventory-card-meta">
           ${item.location ? `📍 ${escHtml(item.location)}` : ''}
           ${item.expiry_date ? ` · Expires ${formatDate(item.expiry_date)}` : ''}
@@ -189,6 +234,9 @@ function renderCards(items, container) {
   setupSwipeDelete(container);
   setupLongPress(container);
   bindDeleteButtons(container);
+  container.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => adjustQuantity(btn.dataset.id, parseInt(btn.dataset.delta)));
+  });
 }
 
 function bindDeleteButtons(container) {

@@ -122,7 +122,7 @@ async function generateRecommendations() {
       output.innerHTML = `<div class="empty-state">
         <div class="empty-state-icon">🔑</div>
         <h3>API Key Not Configured</h3>
-        <p>The <code>ANTHROPIC_API_KEY</code> environment variable is not set. See <strong>Guide 1</strong> in the setup documentation.</p>
+        <p>The <code>GROQ_API_KEY</code> environment variable is not set. See <strong>Guide 1</strong> in the setup documentation.</p>
       </div>`;
     } else {
       output.innerHTML = `<div class="empty-state">

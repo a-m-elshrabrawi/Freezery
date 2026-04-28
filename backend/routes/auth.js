@@ -33,7 +33,10 @@ router.post('/register', async (req, res, next) => {
     }
 
     req.session.userId = user.id;
-    res.status(201).json({ user: { id: user.id, username: user.username, created_at: user.created_at } });
+    req.session.save((saveErr) => {
+      if (saveErr) return next(saveErr);
+      res.status(201).json({ user: { id: user.id, username: user.username, created_at: user.created_at } });
+    });
   } catch (err) {
     next(err);
   }
@@ -58,7 +61,10 @@ router.post('/login', async (req, res, next) => {
     }
 
     req.session.userId = user.id;
-    res.json({ user: { id: user.id, username: user.username, created_at: user.created_at } });
+    req.session.save((saveErr) => {
+      if (saveErr) return next(saveErr);
+      res.json({ user: { id: user.id, username: user.username, created_at: user.created_at } });
+    });
   } catch (err) {
     next(err);
   }

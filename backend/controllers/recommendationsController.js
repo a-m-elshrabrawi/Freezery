@@ -1,4 +1,4 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const Groq = require('groq-sdk');
 const { query } = require('../db');
 
 const cache = new Map();
@@ -6,8 +6,8 @@ const CACHE_TTL = 5 * 60 * 1000;
 
 async function getRecommendations(req, res, next) {
   try {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return res.status(503).json({ error: 'ANTHROPIC_API_KEY is not configured. See setup guide.' });
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(503).json({ error: 'GROQ_API_KEY is not configured. See setup guide.' });
     }
 
     const userId = req.user.id;
@@ -32,33 +32,55 @@ async function getRecommendations(req, res, next) {
       return res.json({ recommendations: [], generated_at: new Date().toISOString(), item_count: 0 });
     }
 
+    const today = new Date().toISOString().split('T')[0];
     const inventoryJson = JSON.stringify(items, null, 2);
 
-    const prompt = `You are a smart grocery inventory assistant. Analyze the following grocery inventory data and return a JSON array of recommendations. Each recommendation must have:
-- "priority": "high" | "medium" | "low"
-- "item_name": string
-- "action": string (e.g. "Restock", "Use before expiry", "Add to shopping list", "Check freshness")
-- "reason": string (1-2 sentences explaining why)
-- "category": string
+    const prompt = `You are a smart home inventory assistant. Today's date is ${today}.
 
-Focus on: items with status 'low' or 'out', items with approaching or past expiry dates, items with quantity below min_quantity, and patterns suggesting restocking cadence. Think like a practical household grocery planner.
+Analyze the grocery inventory below and return a JSON array of recommendations.
 
-Return ONLY a valid JSON array. No explanation, no markdown, no preamble.
+STRICT RULES:
+- Exactly ONE recommendation per item — never repeat an item
+- Use EXACT values from the data (quantities, units, dates) — never invent or approximate
+- Write specific reasons referencing the actual numbers (e.g. "Only 1 box left, minimum is 2")
+- Do NOT say "quantity below minimum quantity" as a generic reason — explain the specifics
 
-INVENTORY DATA:
+PRIORITY RULES (based on today = ${today}):
+- "high": status is 'out', quantity < min_quantity, or expiry within 7 days
+- "medium": expiry within 30 days, or quantity is at or just above min_quantity
+- "low": well stocked, no expiry concern
+
+ACTION — pick the single best fit for each item (you are not limited to these examples):
+"Restock" | "Use soon" | "Use before expiry" | "Freeze before expiry" | "Rotate stock" |
+"Buy in bulk" | "Check condition" | "Consume first" | "All good" | "Monitor levels"
+
+Each object must have exactly:
+{ "item_id": <number>, "item_name": <string>, "category": <string>, "priority": "high"|"medium"|"low", "action": <string>, "reason": <string> }
+
+Return ONLY a valid JSON array. No markdown, no code fences, no explanation.
+
+INVENTORY (${items.length} items):
 ${inventoryJson}`;
 
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const response = await client.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 2048,
       messages: [{ role: 'user', content: prompt }],
     });
 
+    const text = response.choices[0].message.content.trim();
+
     let recommendations;
     try {
-      const text = message.content[0].text.trim();
-      recommendations = JSON.parse(text);
+      const parsed = JSON.parse(text);
+      // Deduplicate by item_id, keeping the first occurrence
+      const seen = new Set();
+      recommendations = parsed.filter(r => {
+        if (!r.item_id || seen.has(r.item_id)) return false;
+        seen.add(r.item_id);
+        return true;
+      });
     } catch {
       recommendations = [];
     }

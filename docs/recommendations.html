@@ -11,23 +11,20 @@
     initTheme();
   </script>
   <style>
-    .rec-group { margin-bottom: 32px; }
+    .rec-group { margin-bottom: clamp(20px, 4vw, 32px); }
     .recommendations-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-    @media (max-width: 600px) {
-      .recommendations-grid { grid-template-columns: 1fr; }
+      grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+      gap: clamp(10px, 2vw, 16px);
     }
     .rec-card { display: flex; flex-direction: column; gap: 8px; }
     .rec-card-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
-    .rec-item-name { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
-    .rec-action { font-size: 0.85rem; font-weight: 600; color: var(--accent); }
-    .rec-reason { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
-    .rec-meta { text-align: center; color: var(--text-secondary); font-size: 0.8rem; margin-top: 8px; padding: 16px; border-top: 1px solid var(--border); }
-    .rec-page-header { margin-bottom: 28px; }
-    .rec-subtitle { color: var(--text-secondary); font-size: 0.875rem; margin-top: 4px; }
+    .rec-item-name { font-size: clamp(0.92rem, 1.5vw, 1rem); font-weight: 700; color: var(--text-primary); }
+    .rec-action { font-size: clamp(0.8rem, 1.2vw, 0.875rem); font-weight: 600; color: var(--accent); }
+    .rec-reason { font-size: clamp(0.8rem, 1.2vw, 0.875rem); color: var(--text-secondary); line-height: 1.55; }
+    .rec-meta { text-align: center; color: var(--text-secondary); font-size: clamp(0.73rem, 1vw, 0.8rem); margin-top: 8px; padding: clamp(12px, 2vw, 16px); border-top: 1px solid var(--border); }
+    .rec-page-header { margin-bottom: clamp(18px, 3vw, 28px); }
+    .rec-subtitle { color: var(--text-secondary); font-size: clamp(0.8rem, 1.2vw, 0.875rem); margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -77,7 +74,7 @@
         <div class="page-header rec-page-header">
           <div>
             <h1>AI Recommendations</h1>
-            <p class="rec-subtitle">Powered by Claude — analyzes your live inventory</p>
+            <p class="rec-subtitle">Powered by Groq — analyzes your live inventory</p>
           </div>
           <button id="generate-btn" class="btn btn-primary">🤖 Generate Recommendations</button>
         </div>
@@ -86,7 +83,7 @@
           <div class="empty-state">
             <div class="empty-state-icon">🤖</div>
             <h3>Ready to analyze</h3>
-            <p>Click "Generate Recommendations" to let Claude analyze your inventory and suggest restocking actions, expiry alerts, and more.</p>
+            <p>Click "Generate Recommendations" to let Groq analyze your inventory and suggest restocking actions, expiry alerts, and more.</p>
           </div>
         </div>
       </div>

@@ -25,6 +25,7 @@ const allowedOrigins = [
   'http://127.0.0.1:3001',
   'http://localhost:8080',
   'http://127.0.0.1:8080',
+  'https://a-m-elshabrawi.github.io',
 ];
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);

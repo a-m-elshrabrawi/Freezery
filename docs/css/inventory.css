@@ -1,20 +1,21 @@
+/* ── Filter bar ────────────────────────────────────────────────── */
 .filter-bar {
   display: flex;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 12px);
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: clamp(14px, 2.5vw, 20px);
   align-items: center;
 }
 
 .filter-bar .search {
-  flex: 1 1 200px;
+  flex: 1 1 180px;
   position: relative;
 }
 
 .filter-bar select {
   flex: 0 0 auto;
   width: auto;
-  min-width: 130px;
+  min-width: clamp(110px, 15vw, 140px);
 }
 
 .filter-toggle-btn {
@@ -25,7 +26,7 @@
 
 .filter-panel {
   display: flex;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 12px);
   flex-wrap: wrap;
 }
 
@@ -34,51 +35,47 @@
     flex-direction: column;
     align-items: stretch;
   }
-
-  .filter-bar .search {
-    width: 100%;
-  }
-
+  .filter-bar .search,
   .filter-bar select {
     width: 100%;
+    min-width: unset;
+    flex: unset;
   }
-
   .filter-toggle-btn {
     display: flex;
   }
-
   .filter-panel {
     display: none;
     flex-direction: column;
     gap: 8px;
   }
-
   .filter-panel.open {
     display: flex;
   }
 }
 
-/* Table view */
+/* ── Table view ────────────────────────────────────────────────── */
 .inventory-table-wrap {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .inventory-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: clamp(0.78rem, 1.2vw, 0.875rem);
 }
 
 .inventory-table th {
   background: var(--surface-raised);
-  padding: 11px 16px;
+  padding: clamp(9px, 1.3vw, 12px) clamp(10px, 2vw, 16px);
   text-align: left;
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 0.9vw, 0.75rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-secondary);
@@ -86,6 +83,7 @@
   white-space: nowrap;
   position: sticky;
   top: 0;
+  z-index: 1;
 }
 
 .inventory-table th .sort-btn {
@@ -103,27 +101,21 @@
 }
 
 .inventory-table td {
-  padding: 11px 16px;
+  padding: clamp(9px, 1.3vw, 12px) clamp(10px, 2vw, 16px);
   border-bottom: 1px solid var(--border);
   color: var(--text-primary);
   vertical-align: middle;
 }
 
-.inventory-table tr:last-child td {
-  border-bottom: none;
-}
+.inventory-table tr:last-child td { border-bottom: none; }
+.inventory-table tr:hover td      { background: var(--row-hover); }
 
-.inventory-table tr:hover td {
-  background: var(--row-hover);
-}
-
-.item-name-cell {
-  font-weight: 600;
-}
+.item-name-cell { font-weight: 600; }
 
 .item-meta {
-  font-size: 0.75rem;
+  font-size: clamp(0.68rem, 1vw, 0.75rem);
   color: var(--text-secondary);
+  margin-top: 2px;
 }
 
 .table-actions {
@@ -132,25 +124,55 @@
   align-items: center;
 }
 
-/* Hide columns on tablet */
-@media (max-width: 1023px) and (min-width: 768px) {
-  .col-purchase-date, .col-notes {
-    display: none;
-  }
+/* ── Quantity +/- control ──────────────────────────────────────── */
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
-/* Card view on mobile */
+.qty-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.qty-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Hide columns on tablet */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .col-purchase-date, .col-notes { display: none; }
+}
+
+/* ── Card view (mobile) ────────────────────────────────────────── */
 .inventory-cards {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 12px);
 }
 
 .inventory-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 14px 16px;
+  padding: clamp(12px, 2vw, 16px);
   position: relative;
   overflow: hidden;
   touch-action: pan-y;
@@ -171,22 +193,22 @@
 }
 
 .inventory-card-name {
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .inventory-card-qty {
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 1.3vw, 0.85rem);
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .inventory-card-meta {
-  font-size: 0.8rem;
+  font-size: clamp(0.75rem, 1.2vw, 0.8rem);
   color: var(--text-secondary);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .inventory-card-actions {
@@ -215,61 +237,64 @@
   transform: translateX(0);
 }
 
-/* Category badge */
+/* ── Category badge ────────────────────────────────────────────── */
 .cat-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
   border-radius: 99px;
-  font-size: 0.72rem;
+  font-size: clamp(0.68rem, 0.95vw, 0.75rem);
   font-weight: 600;
   background: var(--surface-raised);
   color: var(--text-secondary);
   border: 1px solid var(--border);
+  white-space: nowrap;
 }
 
-/* Pagination */
+/* ── Pagination ────────────────────────────────────────────────── */
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-top: 20px;
+  gap: clamp(4px, 1vw, 6px);
+  margin-top: clamp(14px, 2.5vw, 20px);
   flex-wrap: wrap;
 }
 
 .pagination button {
-  min-width: 36px;
-  height: 36px;
+  min-width: clamp(32px, 4vw, 36px);
+  height: clamp(32px, 4vw, 36px);
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-primary);
   border-radius: var(--radius);
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: clamp(0.78rem, 1.1vw, 0.875rem);
   font-family: var(--font-body);
-  padding: 0 10px;
+  padding: 0 clamp(6px, 1vw, 10px);
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .pagination button.active {
   background: var(--accent);
   border-color: var(--accent);
-  color: #000;
+  color: #fff;
   font-weight: 700;
 }
 
 .pagination button:hover:not(.active) {
   background: var(--surface-raised);
+  border-color: var(--accent);
 }
 
 .pagination-simple {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(8px, 2vw, 12px);
 }
 
 .pagination-info {
-  font-size: 0.875rem;
+  font-size: clamp(0.78rem, 1.2vw, 0.875rem);
   color: var(--text-secondary);
 }
