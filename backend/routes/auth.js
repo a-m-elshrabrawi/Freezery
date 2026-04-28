@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { query } = require('../db');
-const { requireAuth } = require('../middleware/auth');
+const { requireAuth, JWT_SECRET } = require('../middleware/auth');
 
 router.post('/register', async (req, res, next) => {
   try {
@@ -32,10 +33,11 @@ router.post('/register', async (req, res, next) => {
       await query('INSERT INTO categories (user_id, name, icon) VALUES ($1, $2, $3)', [user.id, cat.name, cat.icon]);
     }
 
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
     req.session.userId = user.id;
     req.session.save((saveErr) => {
       if (saveErr) return next(saveErr);
-      res.status(201).json({ user: { id: user.id, username: user.username, created_at: user.created_at } });
+      res.status(201).json({ user: { id: user.id, username: user.username, created_at: user.created_at }, token });
     });
   } catch (err) {
     next(err);
@@ -60,10 +62,11 @@ router.post('/login', async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
     req.session.userId = user.id;
     req.session.save((saveErr) => {
       if (saveErr) return next(saveErr);
-      res.json({ user: { id: user.id, username: user.username, created_at: user.created_at } });
+      res.json({ user: { id: user.id, username: user.username, created_at: user.created_at }, token });
     });
   } catch (err) {
     next(err);

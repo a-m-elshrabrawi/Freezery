@@ -56,11 +56,16 @@ export function showToast(message, type = 'success') {
 
 async function apiFetch(path, options = {}) {
   const url = config.API_BASE + path;
+  const token = localStorage.getItem('freezery-token');
   let res;
   try {
     res = await fetch(url, {
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(options.headers || {}),
+      },
       ...options,
     });
   } catch {
@@ -134,14 +139,19 @@ export async function deleteCategory(id) {
 // ── Auth ───────────────────────────────────────────────────────────────────
 
 export async function login(username, password) {
-  return apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+  const data = await apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+  if (data.token) localStorage.setItem('freezery-token', data.token);
+  return data;
 }
 
 export async function register(username, password) {
-  return apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ username, password }) });
+  const data = await apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify({ username, password }) });
+  if (data.token) localStorage.setItem('freezery-token', data.token);
+  return data;
 }
 
 export async function logout() {
+  localStorage.removeItem('freezery-token');
   return apiFetch('/api/auth/logout', { method: 'POST' });
 }
 

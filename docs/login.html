@@ -79,6 +79,16 @@
 
     document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
 
+    // Enter key submits the active form
+    document.querySelectorAll('.auth-form input').forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          input.closest('form').querySelector('[type="submit"]').click();
+        }
+      });
+    });
+
     // Tab switching
     document.querySelectorAll('.auth-tab').forEach(tab => {
       tab.addEventListener('click', () => {
