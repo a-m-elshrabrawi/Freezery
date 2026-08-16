@@ -4,7 +4,7 @@ A personal grocery inventory tracker that helps you manage everything in your ki
 
 ## Live Demo
 
-- **Frontend (GitHub Pages):** `https://a-m-elshrabrawi.github.io/Freezery/`
+- **Frontend (GitHub Pages):** `https://a-m-elshabrawi.github.io/Freezery/`
 - **Backend (Render):** `https://freezery-api.onrender.com`
 
 ---
