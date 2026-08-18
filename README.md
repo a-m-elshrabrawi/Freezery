@@ -157,9 +157,18 @@ until something writes the row. The dashboard undercounts expired items. A sched
 a computed view would fix this properly.
 
 **Free tier cold starts.** Render spins the service down after 15 minutes idle. The first
-request afterwards takes around 30 seconds and often surfaces in the browser as a CORS
-error rather than a timeout, which is misleading. Pinging `/health` every 10 minutes with an
+request afterwards takes roughly 23 seconds — measured at 22.7s against `/health` — and often
+surfaces in the browser as a CORS error rather than a timeout, which is misleading. Once
+awake, the same endpoint answers in about 0.3s. Pinging `/health` every 10 minutes with an
 external cron keeps it warm.
+
+**The API URL is not a page, and its errors are not faults.** `https://freezery-api.onrender.com`
+is a JSON API with no route at `/`, so opening it in a browser returns
+`404 {"error":"Route not found"}` — that is the API working correctly, not a broken
+deployment. `/api/*` returns `401 {"error":"Unauthorized"}` without a token, for the same
+reason. The only endpoint worth visiting directly is `/health`. I am not linking the API as a
+demo anywhere, because a URL that answers 404 on its front page is not a demo, whatever it is
+doing underneath.
 
 **A malformed model response returns nothing, silently.** The `catch` sets recommendations
 to an empty array. The user sees no suggestions and no explanation. It should distinguish
